@@ -87,8 +87,9 @@ def test_previews_fit_their_boards(manifest_data):
 # ----------------------------------------------------------------------
 
 
-def test_not_signed_in_makes_no_request(github_api, plugin, token):
-    token.value = None
+@pytest.mark.parametrize("missing", [None, ""])
+def test_not_signed_in_makes_no_request(github_api, plugin, token, missing):
+    token.value = missing
     result = plugin.fetch_data()
     assert not result.available
     assert "sign in" in result.error.lower()

@@ -307,8 +307,8 @@
     {
       "device_type": "flagship",
       "rows": [
-        "{66} FIESTABOARD",
-        "    14/14 PASSED",
+        "    {66} FIESTABOARD",
+        "     14/14 PASSED",
         "     3 TO REVIEW",
         "#412 FIX LOGIN REDIREC",
         "#409 BUMP REQUESTS",
@@ -327,11 +327,11 @@
       "label": "Failing build",
       "device_type": "flagship",
       "rows": [
-        "{63} FIESTABOARD",
-        "   2 OF 14 FAILED",
-        "LINT",
+        "    {63} FIESTABOARD",
+        "    2 OF 14 FAILED",
         "     3 TO REVIEW",
         "#412 FIX LOGIN REDIREC",
+        "#409 BUMP REQUESTS",
         "MY PRS 2   STARS 1.2K"
       ]
     }
