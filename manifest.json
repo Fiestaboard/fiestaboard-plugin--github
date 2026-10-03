@@ -1,0 +1,400 @@
+{
+  "id": "github",
+  "name": "GitHub",
+  "version": "1.0.0",
+  "description": "Pull requests waiting for your review, your own open pull requests, and the CI status and stars of a repository. Signs in to GitHub with a code, no password or token to paste.",
+  "author": "FiestaBoard Team",
+  "repository": "https://github.com/Fiestaboard/fiestaboard-plugin--github",
+  "documentation": "README.md",
+  "icon": "git-pull-request",
+  "category": "data",
+  "fiestaboard_version": ">=9.8.0",
+  "min_refresh_seconds": 60,
+  "oauth": {
+    "provider_name": "GitHub",
+    "flows": [
+      "device"
+    ],
+    "device_authorization_url": "https://github.com/login/device/code",
+    "token_url": "https://github.com/login/oauth/access_token",
+    "client_id_setting": "client_id",
+    "app_setup_url": "https://github.com/settings/apps/new"
+  },
+  "settings_schema": {
+    "type": "object",
+    "properties": {
+      "enabled": {
+        "type": "boolean",
+        "title": "Enable GitHub",
+        "default": false
+      },
+      "client_id": {
+        "type": "string",
+        "title": "Client ID",
+        "description": "The Client ID of your own GitHub App (it starts with Iv). Create the app at github.com/settings/apps/new with Enable Device Flow ticked, then copy the Client ID from its General page."
+      },
+      "repository": {
+        "type": "string",
+        "title": "Repository",
+        "description": "A repository to show CI status and stars for, as owner/name (for example octo-org/fiestaboard). Leave empty to show only pull requests.",
+        "default": ""
+      },
+      "branch": {
+        "type": "string",
+        "title": "Branch",
+        "description": "Branch whose checks are shown. Leave empty for the repository's default branch.",
+        "default": ""
+      },
+      "refresh_seconds": {
+        "type": "integer",
+        "title": "Refresh Interval (seconds)",
+        "description": "How often to ask GitHub for new data. Each check makes up to four requests.",
+        "default": 120,
+        "minimum": 60,
+        "maximum": 3600
+      }
+    }
+  },
+  "variables": {
+    "groups": {
+      "reviews": {
+        "label": "Review Requests"
+      },
+      "my_prs": {
+        "label": "My Pull Requests"
+      },
+      "repo": {
+        "label": "Repository"
+      },
+      "ci": {
+        "label": "CI Status"
+      }
+    },
+    "simple": {
+      "review_count": {
+        "description": "Open pull requests waiting for your review",
+        "type": "integer",
+        "group": "reviews",
+        "example": "3"
+      },
+      "review_title": {
+        "description": "Title of the most recently updated one",
+        "type": "string",
+        "max_length": 22,
+        "group": "reviews",
+        "example": "FIX LOGIN REDIRECT"
+      },
+      "review_repo": {
+        "description": "Its repository name",
+        "type": "string",
+        "max_length": 22,
+        "group": "reviews",
+        "example": "FIESTABOARD"
+      },
+      "review_number": {
+        "description": "Its pull request number",
+        "type": "string",
+        "max_length": 7,
+        "group": "reviews",
+        "example": "412"
+      },
+      "review_author": {
+        "description": "Who opened it",
+        "type": "string",
+        "max_length": 22,
+        "group": "reviews",
+        "example": "OCTOCAT"
+      },
+      "review_line": {
+        "description": "Number and title on one line",
+        "type": "string",
+        "max_length": 22,
+        "group": "reviews",
+        "example": "#412 FIX LOGIN REDIRECT"
+      },
+      "my_pr_count": {
+        "description": "Your own open pull requests",
+        "type": "integer",
+        "group": "my_prs",
+        "example": "2"
+      },
+      "my_pr_title": {
+        "description": "Title of your most recently updated one",
+        "type": "string",
+        "max_length": 22,
+        "group": "my_prs",
+        "example": "ADD DARK MODE"
+      },
+      "my_pr_repo": {
+        "description": "Its repository name",
+        "type": "string",
+        "max_length": 22,
+        "group": "my_prs",
+        "example": "FIESTABOARD"
+      },
+      "my_pr_number": {
+        "description": "Its pull request number",
+        "type": "string",
+        "max_length": 7,
+        "group": "my_prs",
+        "example": "418"
+      },
+      "my_pr_line": {
+        "description": "Number and title on one line",
+        "type": "string",
+        "max_length": 22,
+        "group": "my_prs",
+        "example": "#418 ADD DARK MODE"
+      },
+      "my_draft_count": {
+        "description": "How many of your open pull requests are drafts",
+        "type": "integer",
+        "group": "my_prs",
+        "example": "1"
+      },
+      "repo": {
+        "description": "The configured repository's name",
+        "type": "string",
+        "max_length": 22,
+        "group": "repo",
+        "example": "FIESTABOARD"
+      },
+      "repo_full": {
+        "description": "Owner and name",
+        "type": "string",
+        "max_length": 22,
+        "group": "repo",
+        "example": "OCTO-ORG/FIESTABOARD"
+      },
+      "branch": {
+        "description": "Branch whose checks are shown (the default branch unless set)",
+        "type": "string",
+        "max_length": 22,
+        "group": "repo",
+        "example": "MAIN"
+      },
+      "stars": {
+        "description": "Star count",
+        "type": "integer",
+        "group": "repo",
+        "example": "1234"
+      },
+      "stars_short": {
+        "description": "Star count, shortened",
+        "type": "string",
+        "max_length": 5,
+        "group": "repo",
+        "example": "1.2K"
+      },
+      "ci_status": {
+        "description": "PASSING, FAILING, RUNNING or NO CHECKS for the latest commit",
+        "type": "string",
+        "max_length": 9,
+        "group": "ci",
+        "example": "PASSING"
+      },
+      "ci_tile": {
+        "description": "One colour tile: green passing, red failing, yellow running (empty with no checks)",
+        "type": "string",
+        "max_length": 1,
+        "group": "ci",
+        "example": "{66}"
+      },
+      "ci_summary": {
+        "description": "Checks in a few words",
+        "type": "string",
+        "max_length": 22,
+        "group": "ci",
+        "example": "14/14 PASSED"
+      },
+      "ci_passed": {
+        "description": "Checks that finished without failing (success, neutral or skipped)",
+        "type": "integer",
+        "group": "ci",
+        "example": "14"
+      },
+      "ci_failed": {
+        "description": "Checks that failed, timed out, were cancelled or need action",
+        "type": "integer",
+        "group": "ci",
+        "example": "0"
+      },
+      "ci_running": {
+        "description": "Checks still queued or running",
+        "type": "integer",
+        "group": "ci",
+        "example": "0"
+      },
+      "ci_total": {
+        "description": "All checks on the latest commit",
+        "type": "integer",
+        "group": "ci",
+        "example": "14"
+      },
+      "ci_failing_name": {
+        "description": "Name of the first failing check",
+        "type": "string",
+        "max_length": 22,
+        "group": "ci",
+        "example": "LINT"
+      }
+    },
+    "arrays": {
+      "reviews": {
+        "label_field": "line",
+        "item_fields": {
+          "title": {
+            "description": "Pull request title",
+            "max_length": 22,
+            "group": "reviews"
+          },
+          "repo": {
+            "description": "Repository name",
+            "max_length": 22,
+            "group": "reviews"
+          },
+          "number": {
+            "description": "Pull request number",
+            "max_length": 7,
+            "group": "reviews"
+          },
+          "author": {
+            "description": "Who opened it",
+            "max_length": 22,
+            "group": "reviews"
+          },
+          "line": {
+            "description": "Number and title on one line",
+            "max_length": 22,
+            "group": "reviews"
+          }
+        }
+      },
+      "my_prs": {
+        "label_field": "line",
+        "item_fields": {
+          "title": {
+            "description": "Pull request title",
+            "max_length": 22,
+            "group": "my_prs"
+          },
+          "repo": {
+            "description": "Repository name",
+            "max_length": 22,
+            "group": "my_prs"
+          },
+          "number": {
+            "description": "Pull request number",
+            "max_length": 7,
+            "group": "my_prs"
+          },
+          "author": {
+            "description": "Who opened it",
+            "max_length": 22,
+            "group": "my_prs"
+          },
+          "line": {
+            "description": "Number and title on one line",
+            "max_length": 22,
+            "group": "my_prs"
+          }
+        }
+      }
+    }
+  },
+  "teaser": "{66} 3 TO REVIEW",
+  "previews": [
+    {
+      "device_type": "flagship",
+      "rows": [
+        "{66} FIESTABOARD",
+        "    14/14 PASSED",
+        "     3 TO REVIEW",
+        "#412 FIX LOGIN REDIREC",
+        "#409 BUMP REQUESTS",
+        "MY PRS 2   STARS 1.2K"
+      ]
+    },
+    {
+      "device_type": "note",
+      "rows": [
+        "{66} FIESTABOARD",
+        "REVIEW 3 MINE 2",
+        "STARS 1.2K"
+      ]
+    },
+    {
+      "label": "Failing build",
+      "device_type": "flagship",
+      "rows": [
+        "{63} FIESTABOARD",
+        "   2 OF 14 FAILED",
+        "LINT",
+        "     3 TO REVIEW",
+        "#412 FIX LOGIN REDIREC",
+        "MY PRS 2   STARS 1.2K"
+      ]
+    }
+  ],
+  "demo": {
+    "flagship": {
+      "name": "GitHub Demo",
+      "template": [
+        "{{github.ci_tile}} {{github.repo}}",
+        "{{github.ci_summary}}",
+        "{{github.review_count}} TO REVIEW",
+        "{{github.reviews.0.line}}",
+        "{{github.reviews.1.line}}",
+        "MY PRS {{github.my_pr_count}}   STARS {{github.stars_short}}"
+      ],
+      "line_metadata": [
+        {
+          "alignment": "center",
+          "wrap": false
+        },
+        {
+          "alignment": "center",
+          "wrap": false
+        },
+        {
+          "alignment": "center",
+          "wrap": false
+        },
+        {
+          "alignment": "left",
+          "wrap": false
+        },
+        {
+          "alignment": "left",
+          "wrap": false
+        },
+        {
+          "alignment": "left",
+          "wrap": false
+        }
+      ]
+    },
+    "note": {
+      "name": "GitHub (Note)",
+      "template": [
+        "{{github.ci_tile}} {{github.repo}}",
+        "REVIEW {{github.review_count}} MINE {{github.my_pr_count}}",
+        "STARS {{github.stars_short}}"
+      ],
+      "line_metadata": [
+        {
+          "alignment": "left",
+          "wrap": false
+        },
+        {
+          "alignment": "left",
+          "wrap": false
+        },
+        {
+          "alignment": "left",
+          "wrap": false
+        }
+      ]
+    }
+  }
+}
