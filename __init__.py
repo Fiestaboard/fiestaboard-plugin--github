@@ -4,7 +4,9 @@ Shows the open pull requests waiting for your review, your own open pull
 requests, and the CI status and star count of one repository.
 
 Sign-in uses FiestaBoard's platform OAuth with the device flow (the
-manifest's ``oauth`` block): the user's own GitHub App, no client secret.
+manifest's ``oauth`` block): FiestaBoard's GitHub App (its Client ID ships as
+``oauth.client_id``), or the user's own app when the optional ``client_id``
+setting is filled in. No client secret, no private key.
 The platform stores the user access token (8 hours) and refreshes it; this
 plugin only calls ``self.get_oauth_token()`` and sends it as a bearer token.
 
@@ -15,10 +17,8 @@ Endpoints (GitHub REST API):
 * ``GET /repos/{owner}/{repo}``                                stars, default branch
 * ``GET /repos/{owner}/{repo}/commits/{ref}/check-runs``       CI status
 
-TODO(shared client ID): FiestaBoard's own GitHub App is pending. When it
-exists, ship its Client ID as ``oauth.client_id`` in manifest.json and keep
-the ``client_id`` setting, so a user's own app still wins when one is saved
-(see "Whose App?" in FiestaBoard's docs/development/plugin-oauth.md).
+Private repositories are visible only where the GitHub App is installed
+(https://github.com/apps/fiestaboard); public ones need just the sign-in.
 
 The notifications endpoint is deliberately not used: it does not accept
 GitHub App user access tokens.
@@ -72,17 +72,19 @@ MINE_QUERY = "is:pr is:open author:@me archived:false"
 NOT_CONNECTED_ERROR = "Not signed in to GitHub. Open this plugin's settings and sign in."
 PLATFORM_TOO_OLD_ERROR = "This FiestaBoard version cannot sign in to GitHub. Update FiestaBoard to use this plugin."
 UNAUTHORIZED_ERROR = "GitHub rejected the sign-in (401). Open this plugin's settings and press Reconnect."
+INSTALL_URL = "https://github.com/apps/fiestaboard"
 FORBIDDEN_ERROR = (
-    "GitHub refused access (403). Check your GitHub App's permissions (Pull requests: Read, Checks: Read) "
-    "and that it is installed on the repositories you want to see."
+    f"GitHub refused access (403). Install the FiestaBoard GitHub App at {INSTALL_URL} on the account "
+    "or organization that owns the repositories. Using your own app? Give it Pull requests and Checks "
+    "read permission."
 )
 CHECKS_FORBIDDEN_ERROR = (
-    "GitHub refused to show the checks (403). Give your GitHub App the Checks: Read permission "
-    "and install it on {repo}."
+    "GitHub refused to show the checks (403). Install the FiestaBoard GitHub App on {repo} "
+    f"at {INSTALL_URL}. Using your own app? Give it the Checks: Read permission."
 )
 REPO_NOT_FOUND_ERROR = (
     "GitHub could not find the repository {repo}. Check the Repository setting; for a private "
-    "repository, install your GitHub App on it."
+    f"repository, install the FiestaBoard GitHub App on it at {INSTALL_URL}."
 )
 BRANCH_NOT_FOUND_ERROR = "GitHub could not find the branch {branch} in {repo}. Check the Branch setting."
 BAD_REPOSITORY_ERROR = "Repository should be owner/name, for example octo-org/fiestaboard"

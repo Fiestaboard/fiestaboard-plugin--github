@@ -391,3 +391,55 @@ def test_core_accepts_the_manifest():
     manifest, errors = load_manifest(ROOT / "manifest.json")
     assert manifest is not None, errors
     assert manifest.id == "github"
+
+
+# ----------------------------------------------------------------------
+# Shared FiestaBoard GitHub App
+# ----------------------------------------------------------------------
+
+SHARED_CLIENT_ID = "Iv23licsxgFjES7n3PnG"
+
+
+def _provider(manifest_data):
+    from src.oauth.provider import parse_provider_block
+
+    return parse_provider_block(manifest_data["oauth"], "GitHub", manifest_data["settings_schema"])
+
+
+def test_manifest_ships_fiestaboard_client_id(manifest_data):
+    assert manifest_data["oauth"]["client_id"] == SHARED_CLIENT_ID
+
+
+@pytest.mark.parametrize("config", [{}, {"client_id": ""}, {"client_id": "   "}, {"client_id": None}])
+def test_shared_client_id_used_when_setting_blank(manifest_data, config):
+    assert _provider(manifest_data).resolve_client_id(config) == SHARED_CLIENT_ID
+
+
+def test_own_client_id_overrides_shared(manifest_data):
+    assert _provider(manifest_data).resolve_client_id({"client_id": " Iv23liOWNAPP0000000 "}) == "Iv23liOWNAPP0000000"
+
+
+def test_client_id_setting_is_optional_override(manifest_data):
+    field = manifest_data["settings_schema"]["properties"]["client_id"]
+    assert field["title"] == "Your own Client ID (optional)"
+    assert "blank" in field["description"].lower() and "FiestaBoard" in field["description"]
+
+
+@pytest.mark.parametrize("name", ["FORBIDDEN_ERROR", "CHECKS_FORBIDDEN_ERROR", "REPO_NOT_FOUND_ERROR"])
+def test_access_errors_point_at_fiestaboard_app_install(name):
+    import plugins.github as gh
+
+    message = getattr(gh, name)
+    assert "github.com/apps/fiestaboard" in message
+    assert "your GitHub App" not in message
+
+
+def test_no_pending_shared_client_notes():
+    for path in ROOT.rglob("*"):
+        if path.is_file() and ".git" not in path.parts and path.suffix in {".json", ".py", ".md"}:
+            if path.name == "test_plugin.py":
+                continue
+            text = path.read_text()
+            assert "TODO(shared client ID)" not in text, path
+            assert "does not have a shared GitHub App" not in text, path
+            assert "Until FiestaBoard has its own GitHub App" not in text, path

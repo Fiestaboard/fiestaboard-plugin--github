@@ -17,6 +17,7 @@
     ],
     "device_authorization_url": "https://github.com/login/device/code",
     "token_url": "https://github.com/login/oauth/access_token",
+    "client_id": "Iv23licsxgFjES7n3PnG",
     "client_id_setting": "client_id",
     "app_setup_url": "https://github.com/settings/apps/new"
   },
@@ -30,8 +31,8 @@
       },
       "client_id": {
         "type": "string",
-        "title": "Client ID",
-        "description": "The Client ID of your own GitHub App (it starts with Iv). Create the app at github.com/settings/apps/new with Enable Device Flow ticked, then copy the Client ID from its General page."
+        "title": "Your own Client ID (optional)",
+        "description": "Leave blank to use FiestaBoard's GitHub App. To use a GitHub App of your own instead, paste its Client ID (it starts with Iv); the app needs Enable Device Flow ticked."
       },
       "repository": {
         "type": "string",

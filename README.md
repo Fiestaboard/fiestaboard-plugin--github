@@ -10,7 +10,7 @@ Show the pull requests waiting for your review, your own open pull requests, and
 
 The GitHub plugin reads your GitHub account through the GitHub REST API: open pull requests where your review is requested, the open pull requests you wrote, and, for one repository you choose, whether the checks on its latest commit pass and how many stars it has. Everything becomes board-ready variables such as `3 TO REVIEW`, `#412 FIX LOGIN REDIRECT` and `14/14 PASSED`.
 
-You sign in once with FiestaBoard's **Sign in with GitHub** button: the board shows a short code, you enter it at github.com/login/device on any device, and you are connected. There is no password, token or client secret to paste. Until FiestaBoard has its own GitHub App, you create a free GitHub App of your own and paste its Client ID; the setup guide walks you through it. Requires FiestaBoard 9.8.0 or later.
+Setup is one click: open the plugin's settings, press **Sign in with GitHub**, and enter the code it shows at github.com/login/device on any device. The sign-in uses FiestaBoard's own GitHub App, [FiestaBoard](https://github.com/apps/fiestaboard), so there is no app to create and no password, token or client secret to paste. Public repositories work straight away; to see private ones, [install the app](https://github.com/apps/fiestaboard) on the account or organization that owns them. Requires FiestaBoard 9.8.0 or later.
 
 ## Template Variables
 
@@ -107,12 +107,12 @@ Build watcher (Flagship, center-aligned):
 | Setting | Type | Required | Default | Description |
 |---------|------|----------|---------|-------------|
 | `enabled` | boolean | No | `false` | Turn the plugin on |
-| `client_id` | string | To sign in | | Client ID of your own GitHub App (starts with `Iv`). Entered in the **Account connection** section |
+| `client_id` | string | No | FiestaBoard's app | Your own Client ID (optional): leave blank to use FiestaBoard's GitHub App. Only needed to sign in through a GitHub App of your own (starts with `Iv`) |
 | `repository` | string | No | | Repository for the CI and star variables, as `owner/name` (a `github.com` link also works). Empty shows only pull requests |
 | `branch` | string | No | | Branch whose checks are shown. Empty uses the repository's default branch |
 | `refresh_seconds` | integer | No | `120` | How often to ask GitHub (60-3600) |
 
-The sign-in itself is not a setting: press **Sign in with GitHub** in the plugin's **Account connection** section. The manifest's `oauth` block declares GitHub's device flow (`https://github.com/login/device/code` and `https://github.com/login/oauth/access_token`) with no scopes and no client secret: a GitHub App's access comes from the permissions set on the app, not from scopes. The app needs these read-only repository permissions:
+The sign-in itself is not a setting: press **Sign in with GitHub** in the plugin's **Account connection** section. The manifest's `oauth` block declares GitHub's device flow (`https://github.com/login/device/code` and `https://github.com/login/oauth/access_token`) with FiestaBoard's GitHub App Client ID (`Iv23licsxgFjES7n3PnG`), no scopes and no client secret: a GitHub App's access comes from the permissions set on the app, not from scopes. FiestaBoard's app has only read-only permissions (Actions, Checks, Issues, Pull requests and Metadata); the plugin uses these:
 
 | Permission | Used for |
 |------------|----------|
@@ -120,9 +120,13 @@ The sign-in itself is not a setting: press **Sign in with GitHub** in the plugin
 | Checks: Read | `GET /repos/{owner}/{repo}/commits/{ref}/check-runs` |
 | Metadata: Read | `GET /repos/{owner}/{repo}` (always granted) |
 
-Public repositories need no installation. For private ones, install the app on the account or organization that owns them. User access tokens last 8 hours; FiestaBoard refreshes them (device-flow tokens refresh without a client secret).
+Public repositories need no installation. For private ones, install the app at [github.com/apps/fiestaboard](https://github.com/apps/fiestaboard) on the account or organization that owns them (all repositories or selected ones). User access tokens last 8 hours; FiestaBoard refreshes them (device-flow tokens refresh without a client secret).
 
-No environment variables: the client ID lives in the plugin settings because the platform reads it from there.
+No environment variables.
+
+### Using your own GitHub App (optional)
+
+If you'd rather sign in through a GitHub App you control, create one with **Enable Device Flow** ticked and the Checks and Pull requests read-only permissions, then paste its Client ID into **Your own Client ID (optional)**. A saved Client ID always wins over FiestaBoard's; clear it to go back. The [setup guide](./docs/SETUP.md#advanced-use-your-own-github-app) has the steps.
 
 ## Features
 
@@ -132,7 +136,7 @@ No environment variables: the client ID lives in the plugin settings because the
 - Star count, in full and shortened (`1.2K`)
 - Four requests per refresh at most, shared between every board showing the plugin; well inside GitHub's search limit of 30 requests a minute
 - Respects GitHub's rate limits (`Retry-After` and `X-RateLimit-Reset`), backs off after outages and rejected sign-ins, and keeps showing the last data for up to ten minutes during an outage
-- Error messages say what to do: sign in, reconnect after a `401`, grant a permission or install the app after a `403`, fix the repository or branch after a `404`
+- Error messages say what to do: sign in, reconnect after a `401`, install the app at github.com/apps/fiestaboard after a `403`, fix the repository (or install the app) or branch after a `404`
 - Never uses the notifications API, which does not accept GitHub App tokens
 - Works on every board shape: Flagship, Note, and Note arrays
 
