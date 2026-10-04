@@ -397,5 +397,13 @@
         }
       ]
     }
-  }
+  },
+  "screenshots": [
+    {
+      "src": "docs/board-display.png",
+      "alt": "GitHub on a FiestaBoard",
+      "caption": "The default template",
+      "primary": true
+    }
+  ]
 }
