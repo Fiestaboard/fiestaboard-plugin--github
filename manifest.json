@@ -8,7 +8,7 @@
   "documentation": "README.md",
   "icon": "git-pull-request",
   "category": "data",
-  "fiestaboard_version": ">=9.8.0",
+  "fiestaboard_version": ">=9.11.0",
   "min_refresh_seconds": 60,
   "oauth": {
     "provider_name": "GitHub",

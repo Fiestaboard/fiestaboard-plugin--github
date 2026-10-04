@@ -51,7 +51,7 @@ def test_no_client_secret_anywhere():
 
 def test_manifest_basics(manifest_data):
     assert manifest_data["id"] == "github"
-    assert manifest_data["fiestaboard_version"] == ">=9.8.0"
+    assert manifest_data["fiestaboard_version"] == ">=9.11.0"
     props = manifest_data["settings_schema"]["properties"]
     assert {"enabled", "client_id", "repository", "branch", "refresh_seconds"} <= set(props)
     assert "required" not in manifest_data["settings_schema"]
@@ -60,7 +60,7 @@ def test_manifest_basics(manifest_data):
 
 def test_ci_pins_the_manifest_version():
     ci = (ROOT / ".github/workflows/ci.yml").read_text()
-    assert "ref: v9.8.0" in ci
+    assert "ref: v9.11.0" in ci
 
 
 def test_every_declared_variable_is_produced(github_api, plugin, manifest_data):

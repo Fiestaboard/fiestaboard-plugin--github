@@ -10,7 +10,7 @@ Show the pull requests waiting for your review, your own open pull requests, and
 
 The GitHub plugin reads your GitHub account through the GitHub REST API: open pull requests where your review is requested, the open pull requests you wrote, and, for one repository you choose, whether the checks on its latest commit pass and how many stars it has. Everything becomes board-ready variables such as `3 TO REVIEW`, `#412 FIX LOGIN REDIRECT` and `14/14 PASSED`.
 
-Setup is one click: open the plugin's settings, press **Sign in with GitHub**, and enter the code it shows at github.com/login/device on any device. The sign-in uses FiestaBoard's own GitHub App, [FiestaBoard](https://github.com/apps/fiestaboard), so there is no app to create and no password, token or client secret to paste. Public repositories work straight away; to see private ones, [install the app](https://github.com/apps/fiestaboard) on the account or organization that owns them. Requires FiestaBoard 9.8.0 or later.
+Setup is one click: open the plugin's settings, press **Sign in with GitHub**, and enter the code it shows at github.com/login/device on any device. The sign-in uses FiestaBoard's own GitHub App, [FiestaBoard](https://github.com/apps/fiestaboard), so there is no app to create and no password, token or client secret to paste. Public repositories work straight away; to see private ones, [install the app](https://github.com/apps/fiestaboard) on the account or organization that owns them. Requires FiestaBoard 9.11.0 or later.
 
 ## Template Variables
 

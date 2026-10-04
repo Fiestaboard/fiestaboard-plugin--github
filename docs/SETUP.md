@@ -14,7 +14,7 @@ Connect FiestaBoard to your GitHub account to show pull requests waiting for you
 **Prerequisites:**
 
 - A GitHub account. Nothing to create: the sign-in uses FiestaBoard's GitHub App, [FiestaBoard](https://github.com/apps/fiestaboard), which only has read-only permissions.
-- FiestaBoard 9.8.0 or later (the plugin's settings have an **Account connection** section with guided setup).
+- FiestaBoard 9.11.0 or later (the plugin's settings have an **Account connection** section with guided setup).
 
 FiestaBoard only reads. It can't comment, merge, approve, or change anything on GitHub.
 
@@ -199,7 +199,7 @@ A saved Client ID always wins over FiestaBoard's. Clear it and reconnect to go b
 
 **"This FiestaBoard version cannot sign in to GitHub"**
 
-- Update FiestaBoard to 9.8.0 or later.
+- Update FiestaBoard to 9.11.0 or later.
 
 **Plugin shows "Not Available"**
 
